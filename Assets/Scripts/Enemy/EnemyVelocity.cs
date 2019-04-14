@@ -10,6 +10,8 @@ public class EnemyVelocity : MonoBehaviour
     float m_maxVelocity;
     [SerializeField]
     float m_minRandomTorque = -10, m_maxRandomTorque = 10;
+
+    public GameObject target;
     
 
     private void Awake()
@@ -17,6 +19,7 @@ public class EnemyVelocity : MonoBehaviour
         // Set a random max velocity and add random torque
         // Makes the object move at a random speed and rotate randomly
         m_rigidbody = GetComponent<Rigidbody>();
+        //target = GetComponent<GameObject>();
         m_maxVelocity = Random.Range(m_minRandomVelocity, m_maxRandomVelocity);
         m_rigidbody.AddRelativeTorque(new Vector3(Random.Range(m_minRandomTorque, m_maxRandomTorque), Random.Range(m_minRandomTorque, m_maxRandomTorque), Random.Range(m_minRandomTorque, m_maxRandomTorque)));
     }
@@ -25,7 +28,7 @@ public class EnemyVelocity : MonoBehaviour
     {
         if (m_rigidbody.velocity.magnitude > m_maxVelocity)
         {
-            m_rigidbody.velocity = Vector3.ClampMagnitude(m_rigidbody.velocity, m_maxVelocity);
+            //m_rigidbody.velocity = Vector3.ClampMagnitude(m_rigidbody.velocity, m_maxVelocity);
         }
         // Hard coded the position however same principle as in bullet velocity
         if (transform.position.x <= -20)
@@ -33,6 +36,9 @@ public class EnemyVelocity : MonoBehaviour
             Destroy(gameObject);
         }
 
+        Vector3 pos = new Vector3(0.0f, 0.0f, 0.0f);
+        gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position,
+            pos, 5.0f * Time.deltaTime);
     }
 
 

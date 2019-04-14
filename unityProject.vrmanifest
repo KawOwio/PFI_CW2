@@ -1,0 +1,16 @@
+{
+  "source": "Unity",
+  "applications": [
+    {
+      "app_key": "application.generated.unity.pfi_cw2.exe",
+      "launch_type": "url",
+      "url": "steam://launch/",
+      "action_manifest_path": "D:\\Users\\Nikita\\Desktop\\Unity\\2017.4.5\\PFI_CW2\\actions.json",
+      "strings": {
+        "en_us": {
+          "name": "PFI_CW2 [Testing]"
+        }
+      }
+    }
+  ]
+}

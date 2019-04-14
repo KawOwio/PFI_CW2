@@ -15,8 +15,9 @@ public class EnemySpawner : MonoBehaviour
 
     [SerializeField]
     float m_minMaxSpawnWidth = 9.5f;
-    float m_minMaxSpawnHeight = 9.5f;
     float m_minSpawnWidth = 0f;
+    [SerializeField]
+    float m_minMaxSpawnHeight = 9.5f;
     float m_minSpawnHeight = 0f;
 
     private void Start()
