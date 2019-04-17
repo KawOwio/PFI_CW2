@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - Enemy
+  - projectile
+  - FxTemporaire
+  - PlayButton
+  - QuitButton
+  - MainMenu
   layers:
   - Default
   - TransparentFX

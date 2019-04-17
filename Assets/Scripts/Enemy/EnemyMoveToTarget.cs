@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyMoveToTarget : MonoBehaviour {
-
+public class EnemyMoveToTarget : MonoBehaviour
+{
     private float m_minMovementSpeed = 10.0f, m_maxMovementSpeed = 50.0f;
     private float m_minRotationSpeed = -50.0f, m_maxRotationSpeed = 50.0f;
 
@@ -15,8 +15,6 @@ public class EnemyMoveToTarget : MonoBehaviour {
         rotation = new Vector3(Random.Range(m_minRotationSpeed, m_maxRotationSpeed),
             Random.Range(m_minRotationSpeed, m_maxRotationSpeed),
             Random.Range(m_minRotationSpeed, m_maxRotationSpeed));
-
-        
     }
 
     //Moves enemies towards the player
@@ -27,22 +25,12 @@ public class EnemyMoveToTarget : MonoBehaviour {
         gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position,
             pos, speed);
 
-        RandomRotation();
+        gameObject.transform.Rotate(rotation * Time.deltaTime);
 
         if (gameObject.transform.position.x <= -1.5f)
         {
+            FindObjectOfType<GameManager>().EndGame();
             Destroy(gameObject);
         }
-    }
-
-    
-    private void RandomRotation()
-    {
-        //Keep it for aliens;
-        //gameObject.transform.Rotate(new Vector3(Random.Range(m_minRotationSpeed, m_maxRotationSpeed),
-        //    Random.Range(m_minRotationSpeed, m_maxRotationSpeed),
-        //    Random.Range(m_minRotationSpeed, m_maxRotationSpeed)));
-
-        gameObject.transform.Rotate(rotation * Time.deltaTime);
     }
 }

@@ -1,25 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Valve.VR;
 
 public class ViveInput : MonoBehaviour
 {
     public SteamVR_Controller.Device m_device;
-    public AmmoDisplay m_ammoDisplay;
     public Pistol m_pistol;
 
     private SteamVR_TrackedObject m_trackedObject = null;
-    //private Pistol m_pistol = null;
-    //private AmmoDisplay m_ammoDisplay = null;
-
-    private bool gripPressed = false;
 
     private void Awake()
     {
         m_trackedObject = GetComponent<SteamVR_TrackedObject>();
-        //m_pistol = GetComponentInChildren<Pistol>();
-        //m_ammoDisplay = GetComponentInChildren<AmmoDisplay>();
     }
 
     // Update is called once per frame
@@ -40,10 +31,10 @@ public class ViveInput : MonoBehaviour
             m_pistol.FireRelease();
         }
 
+        //Grip button
         if (m_device.GetPress(SteamVR_Controller.ButtonMask.Grip))
         {
             StartCoroutine(m_pistol.Reload());
-            m_ammoDisplay.CreateAmmo(8);
         }
 
         //Set Trigger

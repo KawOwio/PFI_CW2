@@ -1,11 +1,16 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Pistol : MonoBehaviour
 {
-    public Transform m_barrel;
-    public Transform m_trigger;
+    //Positions of the trigger and the barrel
+    [SerializeField] private Transform m_barrel;
+    [SerializeField] private Transform m_trigger;
+
+    [SerializeField] private AudioSource shoot;
+    [SerializeField] private AudioSource reload;
+    [SerializeField] private AudioSource empty;
 
     private Animator m_animator;
 
@@ -14,11 +19,11 @@ public class Pistol : MonoBehaviour
 
     private int m_currentAmmo = 0;
     private int m_magazineSize = 8;
+    private int m_enemiesKilled = 0;
 
     private bool m_isReloading = false;
-    private bool m_magazineEmpty = false;
 
-    public delegate void FireAction();
+    public delegate void FireAction(int ammoCount);
     public static event FireAction OnFire;
 
     private void Awake()
@@ -40,13 +45,14 @@ public class Pistol : MonoBehaviour
         bool fired = m_animator.GetBool("hasFired");
         if (m_currentAmmo > 0 && m_isReloading == false && !fired)
         {
-            if(OnFire != null)
+            if (OnFire != null)
             {
-                OnFire();
+                OnFire(m_currentAmmo);
             }
 
+            shoot.Play();
             m_currentAmmo--;
-            if(m_currentAmmo <= 0)
+            if (m_currentAmmo <= 0)
             {
                 m_animator.SetBool("magazineEmpty", true);
             }
@@ -54,7 +60,6 @@ public class Pistol : MonoBehaviour
 
             RaycastHit hit;
             Ray ray = new Ray(m_barrel.position, m_barrel.forward);
-            Debug.DrawRay(m_barrel.position, m_barrel.forward, Color.red, 5.0f);
 
             m_animator.SetBool("hasFired", true);
 
@@ -63,6 +68,10 @@ public class Pistol : MonoBehaviour
                 //Check for damage
                 CheckForDamage(hit.collider.gameObject);
             }
+        }
+        else if (m_currentAmmo <= 0 && m_isReloading == false)
+        {
+            empty.Play();
         }
     }
 
@@ -74,11 +83,15 @@ public class Pistol : MonoBehaviour
     //Reload with a one second "cast"
     public IEnumerator Reload()
     {
-        m_isReloading = true;
-        yield return new WaitForSeconds(1.0f);
-        m_currentAmmo = m_magazineSize;
-        m_isReloading = false;
-        m_animator.SetBool("magazineEmpty", false);
+        if(m_isReloading == false)
+        {
+            reload.Play();
+            m_isReloading = true;
+            yield return new WaitForSeconds(1.25f);
+            m_currentAmmo = m_magazineSize;
+            m_isReloading = false;
+            m_animator.SetBool("magazineEmpty", false);
+        }
     }
 
     //Check if you dealt damage to an enemy
@@ -87,7 +100,20 @@ public class Pistol : MonoBehaviour
         if(hitObject.CompareTag("Enemy"))
         {
             EnemyHealth enemy = hitObject.GetComponent<EnemyHealth>();
-            enemy.DamageEnemy(this);
+            m_enemiesKilled += enemy.DamageEnemy(this);
+        }
+        else if(hitObject.CompareTag("PlayButton"))
+        {
+            Debug.Log("Play");
+            Invoke("Play", 1.0f);  
+        }
+        else if (hitObject.CompareTag("MainMenu"))
+        {
+            Invoke("MainMenu", 1.0f);
+        }
+        else if(hitObject.CompareTag("QuitButton"))
+        {
+            Invoke("Quit", 1.0f);
         }
     }
 
@@ -104,5 +130,25 @@ public class Pistol : MonoBehaviour
     public bool GetReloadStatus()
     {
         return m_isReloading;
+    }
+
+    public int GetScore()
+    {
+        return m_enemiesKilled;
+    }
+
+    private void Play()
+    {
+        SceneManager.LoadScene(1);
+    }
+
+    private void MainMenu()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+    private void Quit()
+    {
+        Application.Quit();
     }
 }

@@ -1,21 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class AmmoDisplay : MonoBehaviour
 {
-    public GameObject m_bulletPrefab;
-    private List<GameObject> m_clip = new List<GameObject>();
-    private bool[] bulletCreated;
-    public Pistol pistol;
+    private List<GameObject> m_clip = new List<GameObject>();   //List of bullets in the clip for the HUD
+    [SerializeField] private Pistol pistol;
+    [SerializeField] private GameObject m_bulletPrefab;
+
+    private bool firstRun = true;   //Used to delete the rest of bullets in the clip when reloading
 
     private void Awake()
     {
-        //pistol = GetComponentInParent<Pistol>();
         Pistol.OnFire += UpdateDisplay;
-
         int magazineSize = pistol.GetMagazineSize();
         m_clip = CreateAmmo(magazineSize);
+        firstRun = false;
     }
 
     private void OnDestroy()
@@ -23,27 +22,33 @@ public class AmmoDisplay : MonoBehaviour
         Pistol.OnFire -= UpdateDisplay;
     }
 
-    //private void Update()
-    //{
-    //    if (pistol.GetAmmo() < 8 && pistol.GetReloadStatus() == true)
-    //    {
-    //        int magazineSize = pistol.GetMagazineSize();
-    //        m_clip = CreateAmmo(magazineSize);
-    //    }
-    //}
+    private void Update()
+    {
+        //Check for grip button press
+        if (pistol.GetAmmo() < 8 && pistol.GetReloadStatus() == true)
+        {
+            int magazineSize = pistol.GetMagazineSize();
+            m_clip = CreateAmmo(magazineSize);
+        }
+    }
 
     public List<GameObject> CreateAmmo(int magazineSize)
     {
-        Debug.Log("MS: " + magazineSize);
-        Debug.Log("CreatingAmmo");
+        //Debug.Log("MS: " + magazineSize);
+        //Debug.Log("CreatingAmmo");
         List<GameObject> allAmmo = new List<GameObject>();
 
         float xStart = magazineSize / 2;
         xStart *= -1;
 
-        int a = pistol.GetAmmo();
-        for(int i = a; i < magazineSize; i++)
+        for(int i = 0; i < magazineSize; i++)
         {
+            //Delete
+            if(firstRun == false)
+            {
+                Destroy(m_clip[i]);
+            }
+
             //Create
             GameObject newAmmo = Instantiate(m_bulletPrefab, transform);
 
@@ -52,21 +57,14 @@ public class AmmoDisplay : MonoBehaviour
             newAmmo.transform.localPosition = new Vector3(xFinal, 0, 0);
 
             //Save it
-            //bulletCreated[i] = true;
             allAmmo.Add(newAmmo);
         }
-
         return allAmmo;
     }
 
-    private void UpdateDisplay()
+    private void UpdateDisplay(int ammoCount)
     {
-        int t = pistol.GetAmmo();
-        int i = m_clip.Count - t;
-        Destroy(m_clip[i], 2.0f);
-
-        //collision
-        //m_clip[i].GetComponent<Collider>().enabled = true;
+        int i = m_clip.Count - ammoCount;
 
         //physics
         Rigidbody rigidbody = m_clip[i].GetComponent<Rigidbody>();
