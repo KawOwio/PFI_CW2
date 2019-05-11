@@ -8,11 +8,14 @@ public class Pistol : MonoBehaviour
     [SerializeField] private Transform m_barrel;
     [SerializeField] private Transform m_trigger;
 
+    [SerializeField] private Score score;
+
     [SerializeField] private AudioSource shoot;
     [SerializeField] private AudioSource reload;
     [SerializeField] private AudioSource empty;
 
     private Animator m_animator;
+    private ParticleSystem m_particles;
 
     public float m_sensetivity;
     public float m_damage;
@@ -29,6 +32,7 @@ public class Pistol : MonoBehaviour
     private void Awake()
     {
         m_animator = GetComponent<Animator>();
+        m_particles = GetComponent<ParticleSystem>();
         m_currentAmmo = m_magazineSize;
     }
 
@@ -51,6 +55,7 @@ public class Pistol : MonoBehaviour
             }
 
             shoot.Play();
+            m_particles.Play();
             m_currentAmmo--;
             if (m_currentAmmo <= 0)
             {
@@ -80,7 +85,7 @@ public class Pistol : MonoBehaviour
         m_animator.SetBool("hasFired", false);
     }
 
-    //Reload with a one second "cast"
+    //Reload with a one 1.25 second "cast" time
     public IEnumerator Reload()
     {
         if(m_isReloading == false)
@@ -94,26 +99,35 @@ public class Pistol : MonoBehaviour
         }
     }
 
-    //Check if you dealt damage to an enemy
+    //Check if you dealt damage to an enemy or hit any button
     private void CheckForDamage(GameObject hitObject)
     {
         if(hitObject.CompareTag("Enemy"))
         {
             EnemyHealth enemy = hitObject.GetComponent<EnemyHealth>();
             m_enemiesKilled += enemy.DamageEnemy(this);
+            Debug.Log(m_enemiesKilled);
         }
         else if(hitObject.CompareTag("PlayButton"))
         {
             Debug.Log("Play");
-            Invoke("Play", 1.0f);  
+            Invoke("Play", 0.1f);  
         }
         else if (hitObject.CompareTag("MainMenu"))
         {
-            Invoke("MainMenu", 1.0f);
+            if (SceneManager.GetActiveScene().buildIndex == 1)
+            {
+                PlayerPrefs.SetInt("LastScore", m_enemiesKilled);
+            }
+                Invoke("MainMenu", 0.1f);
         }
         else if(hitObject.CompareTag("QuitButton"))
         {
-            Invoke("Quit", 1.0f);
+            Invoke("Quit", 0.5f);
+        }
+        else if(hitObject.CompareTag("ResetButton"))
+        {
+            score.Reset();
         }
     }
 

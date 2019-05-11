@@ -9,10 +9,11 @@ public class EnemyHealth : MonoBehaviour
     {
         m_health -= pistol.m_damage;
 
+        //If enemy's health is less than 0 then destroy it
         if (m_health <= 0)
         {
             Destroy(gameObject);
-            return 1;
+            return 1;   //returns +1 to score
         }
         return 0;
     }

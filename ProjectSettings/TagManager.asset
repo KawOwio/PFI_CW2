@@ -10,6 +10,9 @@ TagManager:
   - PlayButton
   - QuitButton
   - MainMenu
+  - ResetButton
+  - Fire
+  - Music
   layers:
   - Default
   - TransparentFX

@@ -12,6 +12,7 @@ public class Score : MonoBehaviour {
 
     private void Start()
     {
+        //Sets score in the game over screen
         if(SceneManager.GetActiveScene().buildIndex == 2)
         {
             scoreText.text = "Score: " + PlayerPrefs.GetInt("LastScore", 0).ToString();
@@ -21,18 +22,21 @@ public class Score : MonoBehaviour {
 
     void Update ()
     {
-        score = pistol.GetScore();
-        scoreText.text = "Score: " + score.ToString();
+        if (SceneManager.GetActiveScene().buildIndex == 1)
+        {
+            score = pistol.GetScore();
+            scoreText.text = "Score: " + score.ToString();
 
-        //Updating highscore
-        if (score > PlayerPrefs.GetInt("HighScore", 0))
-        {
-            PlayerPrefs.SetInt("HighScore", score);
-            highScore.text = "High Score: " + score.ToString();
-        }
-        else
-        {
-            PlayerPrefs.SetInt("LastScore", score);
+            //Updating highscore
+            if (score > PlayerPrefs.GetInt("HighScore", 0))
+            {
+                PlayerPrefs.SetInt("HighScore", score);
+                highScore.text = "High Score: " + score.ToString();
+            }
+            else
+            {
+                PlayerPrefs.SetInt("LastScore", score);
+            }
         }
 	}
 
@@ -40,5 +44,6 @@ public class Score : MonoBehaviour {
     {
         PlayerPrefs.DeleteKey("HighScore");
         PlayerPrefs.DeleteKey("LastScore");
+        highScore.text = "High Score: " + PlayerPrefs.GetInt("HighScore", 0).ToString();
     }
 }
